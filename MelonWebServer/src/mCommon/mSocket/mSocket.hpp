@@ -19,6 +19,8 @@
 
 #endif
 
+#define SOCKET_BUFFER_SIZE 512
+
 #include "../Melon.hpp"
 #include "../mLogger/mLogger.hpp"
 #include "../mConfig/mConfig.hpp"
@@ -26,7 +28,7 @@
 class mSocket
 {
 public:
-	mSocket();
+	mSocket(std::atomic_bool& cancellation_token);
 	~mSocket(void);
 
 	bool IsError();
@@ -34,11 +36,11 @@ public:
 
 private:
 	bool m_failure;
+	std::atomic_bool m_cancellation_token;
 #ifdef _WIN32
 	WSADATA m_wsa;
 	SOCKET m_socket;
-	std::unique_ptr<struct addrinfo>(m_hints);
-	struct addrinfo* m_result;
+	struct addrinfo* m_result, m_hints;
 #else
 
 #endif // _WIN32

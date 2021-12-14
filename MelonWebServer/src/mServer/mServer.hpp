@@ -4,6 +4,8 @@
 #include "../mCommon/mSocket/mSocket.hpp"
 
 #include <memory>
+#include <thread>
+#include <chrono>
 
 class mServer
 {
@@ -17,5 +19,7 @@ private:
 	// I doubt this is how you're supposed to do it. But it builds, so i'll keep going with this until i figure out shared_ptr.
 	std::shared_ptr<mLogger> m_logger;
 	std::unique_ptr<mSocket> m_socket;
+	std::atomic_bool m_flag;
+	//std::thread m_socket_thread;
 };
 

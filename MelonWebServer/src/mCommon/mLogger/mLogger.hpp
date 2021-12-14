@@ -13,7 +13,6 @@ public:
 	mLogger(const bool& log_console)
 	{
 		m_log_console = log_console;
-		a_a = 9999;
 	}
 	~mLogger(void)
 	{
@@ -32,7 +31,6 @@ public:
 	}
 
 private:
-	int a_a;
 	bool m_log_console;
 
 private:
