@@ -19,11 +19,16 @@
 
 #endif
 
-#define SOCKET_BUFFER_SIZE 512
+#define SOCKET_BUFFER_SIZE 4096
+
+#include <vector>
+
+#include <HTTPParser.hpp>
 
 #include "../Melon.hpp"
 #include "../mLogger/mLogger.hpp"
 #include "../mConfig/mConfig.hpp"
+
 
 class mSocket
 {

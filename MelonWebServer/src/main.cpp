@@ -5,8 +5,13 @@ namespace Melon
 	std::shared_ptr<mLogger> logger;
 	std::unique_ptr<mServer> server;
 }
+
+void shutdown_sequence();
+
 int main()
 {
+	std::atexit(shutdown_sequence);
+	signal(SIGINT, [](int) {shutdown_sequence(); });
 	try
 	{
 		Melon::config = std::make_unique<mConfig>("config.ini");
@@ -20,4 +25,17 @@ int main()
 		return -1;
 	}
 	return 0;
+}
+
+void shutdown_sequence()
+{
+	// Check if server is running.
+	if (Melon::server)
+	{
+		if (!Melon::server->shutdown())
+		{
+			Melon::logger->Log("SERVER", "Shutdown sequence returned an error.");
+		}
+	}
+	exit(0);
 }

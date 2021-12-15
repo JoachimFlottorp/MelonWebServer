@@ -5,8 +5,8 @@ mServer::mServer(const int32_t& port, std::shared_ptr<mLogger> const& logger)
 	m_logger = logger;
 	m_port = port;
 	m_logger->Log("SERVER", "Creating Server...");
-	m_flag = false;
-	m_socket = std::make_unique<mSocket>(m_flag);
+	m_close_socket = false;
+	m_socket = std::make_unique<mSocket>(m_close_socket);
 	if (m_socket->IsError())
 	{
 		m_logger->Log("SERVER", "Shutting down server.");
@@ -18,16 +18,25 @@ mServer::mServer(const int32_t& port, std::shared_ptr<mLogger> const& logger)
 
 mServer::~mServer(void)
 {
-	m_logger->Log("SERVER", "Destroying Server");
+	m_logger->Log("SERVER", "Destroying Server...");
 }
 
 void mServer::Listen()
 {
 	std::thread thread([this] { m_socket->Listen(); });
 
-	m_flag = true;
-	thread.join();
-	
+	while (!m_socket->IsError())
+	{
 
+	}
+
+	thread.join();
 }
 
+bool mServer::shutdown()
+{
+	// Tell the socket thread to close.
+	m_close_socket = true;
+
+	return true;
+}

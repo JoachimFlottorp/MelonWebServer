@@ -114,62 +114,87 @@ void mSocket::Listen()
 			closesocket(m_socket);
 			return;
 		}
-		Melon::logger->Log("SOCKET", "Opened Connection to: %u.%u.%u.%u",
-			clientaddr.sin_addr.S_un.S_un_b.s_b1,
-			clientaddr.sin_addr.S_un.S_un_b.s_b2,
-			clientaddr.sin_addr.S_un.S_un_b.s_b3,
-			clientaddr.sin_addr.S_un.S_un_b.s_b4);
-	
+
+		std::vector<char> v_hst(NI_MAXHOST), v_serv(NI_MAXSERV);
+		std::string s_hst, s_serv;
+		int gnires = getnameinfo(reinterpret_cast<SOCKADDR*>(&clientaddr), sizeof(clientaddr), &v_hst[0], NI_MAXHOST, &v_serv[0], NI_MAXSERV, 0);
+
+		s_hst.append(v_hst.cbegin(), v_hst.cend());
+		s_serv.append(v_serv.cbegin(), v_serv.cend());
+
+		if (gnires == 0)
+		{
+			Melon::logger->Log("SOCKET", "Opened Connection to: %s:%s",
+				s_hst.c_str(),s_serv.c_str());
+		}
+		else
+		{
+			inet_ntop(AF_INET, &clientaddr.sin_addr, &v_hst[0], NI_MAXHOST);
+			Melon::logger->Log("SOCKET", "Opened Connection to: %s:%s",
+				s_hst.c_str(),
+				ntohs(clientaddr.sin_port));
+		}
 
 		// Receive until the peer shuts down the connection
-		int iResult{};
+		int bytesReceived = 0;
 		do {
 
-			char recvbuf[SOCKET_BUFFER_SIZE];
+			std::vector<char> buffer(SOCKET_BUFFER_SIZE);
+			std::string rcv{};
 			std::string sndbuf = "Hello, World!\n";
-			int recvbuflen = SOCKET_BUFFER_SIZE;
-			iResult = recv(client, recvbuf, recvbuflen, 0);
-			if (iResult > 0) {
-				Melon::logger->Log("SOCKET", "Bytes received: %d", iResult);
-				Melon::logger->Log("SOCKET", "%s", recvbuf);
+			bytesReceived = recv(client, &buffer[0], static_cast<int>(buffer.size()), 0);
+			if (bytesReceived > 0) {
+				rcv.append(buffer.cbegin(), buffer.cend());
+				Melon::logger->Log("SOCKET", "Bytes received: %d", bytesReceived);
+				printf("%s", rcv.c_str());
 
-				if (send(client, sndbuf.c_str(), sndbuf.length(), 0) == SOCKET_ERROR)
+				HTTP::request request = HTTP::init_request(rcv);
+
+				// Check if the client sends an illegal request.
+				if (!request.valid())
+				{
+					sndbuf.replace(0, sndbuf.size(), "Not correct"); // Change this.
+				}
+				// If it is correct.
+				else 
+				{
+
+				}
+
+				if (send(client, sndbuf.c_str(), static_cast<int>(sndbuf.length()), 0) == SOCKET_ERROR)
 				{
 					closesocket(client);
 #ifdef _WIN32
 					Melon::logger->Log("SOCKET", "Sending to client failed. Error Code: %d", WSAGetLastError());
-					WSACleanup();
 #else
 
 #endif // _WIN32
-					m_failure = true;
-					return;
-				}
-				else if (iResult == 0)
-					Melon::logger->Log("SOCKET", "Connection closing...\n");
-				else {
-#ifdef _WIN32
-					Melon::logger->Log("SOCKET", "recv failed with error: %d\n", WSAGetLastError());
-					WSACleanup();
-#else
-
-#endif // _WIN32
-					closesocket(client);
 					return;
 				}
 			}
+			else if (bytesReceived == 0)
+				Melon::logger->Log("SOCKET", "Connection closing...\n");
+			else if (bytesReceived == -1) {
+#ifdef _WIN32
+				Melon::logger->Log("SOCKET", "recv failed with error: %d\n", WSAGetLastError());
+#else
 
-		} while (iResult > 0);
-
+#endif // _WIN32
+				closesocket(client);
+				return;
+			}
+		} while (bytesReceived == SOCKET_BUFFER_SIZE);
 		// shutdown the connection since we're done
 		if (shutdown(client, SD_SEND) == SOCKET_ERROR) {
 			closesocket(client);
 	#ifdef _WIN32
 			Melon::logger->Log("SOCKET", "Client shutdown failed: Error Code: %d", WSAGetLastError());
-			WSACleanup();
 	#else
 
 	#endif // _WIN32
+			m_failure = true;
 		}
+		closesocket(client);
+		Melon::logger->Log("SOCKET", "Client disconnected...");
 	}
 }

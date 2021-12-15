@@ -7,3 +7,4 @@
 
 #include <iostream>
 #include <memory>
+#include <csignal>
