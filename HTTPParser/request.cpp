@@ -1,5 +1,4 @@
-#include "Request.hpp"
-#include <iostream>
+#include "HTTP.hpp"
 
 HTTP::request::request(const std::string& req)
 {
@@ -52,6 +51,7 @@ HTTP::request::request(const std::string& req)
 	printf("[Path]: %s\n", m_header.path.c_str());
 	printf("[Version]: %s\n", m_header.version.c_str());
 	optionals_parse();
+	request_body(); // [TODO]: Should i do something with this.
 
 	// Not a valid request.
 	if (!valid())
@@ -60,9 +60,8 @@ HTTP::request::request(const std::string& req)
 			printf("[ERROR_REQUEST]: %i", i);
 		return;
 	}
-	printf("WORKS!\n");
-	for (const auto& i : m_header.optionals)
-		printf("%s : %s\n", i.first.c_str(), i.second.c_str());
+	//for (const auto& i : m_header.optionals)
+		//printf("%s : %s\n", i.first.c_str(), i.second.c_str());
 }
 
 HTTP::request::~request(void)
@@ -70,9 +69,12 @@ HTTP::request::~request(void)
 
 }
 
-void HTTP::request::parse_body()
+void HTTP::request::request_body()
 {
-
+	for (const auto& i : m_req_vec)
+	{
+		m_req_body.push_back(i);
+	}
 }
 
 bool HTTP::request::check_error(HTTP::HEAD_ERROR error_type)
@@ -101,26 +103,25 @@ bool HTTP::request::valid()
 
 void HTTP::request::optionals_parse()
 {
-	for (auto const& line : m_req_vec)
+	std::vector<std::string> copy{};
+	copy.assign(m_req_vec.begin(), m_req_vec.end());
+	for (auto const& line : copy)
 	{
 		// [0] = key, [1] = value.
 		std::vector<std::string> vec;
-		auto ss = std::stringstream(line);
-		auto split = std::string();
-		auto count = 1;
-		while (std::getline(ss, split, ':'))
+
+		auto first_semicolon = line.find_first_of(':');
+		if (first_semicolon != std::string::npos)
 		{
-			vec.push_back(split);
-			count++;
+			vec.push_back(line.substr(0, first_semicolon));
+			vec.push_back(line.substr(first_semicolon + 1));
 		}
 
-		// There was an extra : in the line, so append third element and higher of the vector to [1].
-		if (vec.size() > 2)
+		// The newline at the bottom of header, which means the header is done.
+		if (vec.size() <= 1)
 		{
-			for (auto i = 2; i < vec.size(); i++)
-			{
-				vec[1] += ":" + vec[i];
-			}
+			m_req_vec.erase(m_req_vec.begin());
+			return;
 		}
 
 		// Already exists and therefore the header is not correctly formatted.
@@ -130,10 +131,7 @@ void HTTP::request::optionals_parse()
 			return;
 		}
 
-		// The newline at the bottom of header, which means the header is done.
-		if (vec.size() == 1)
-			return;
-
 		m_header.optionals.insert(std::pair<std::string, std::string>(vec[0], vec[1]));
+		m_req_vec.erase(m_req_vec.begin());
 	}
 }

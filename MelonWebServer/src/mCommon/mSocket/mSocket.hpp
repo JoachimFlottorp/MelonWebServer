@@ -20,6 +20,7 @@
 #endif
 
 #define SOCKET_BUFFER_SIZE 4096
+#define FAILED_SOCKET 00001
 
 #include <vector>
 
@@ -42,12 +43,18 @@ public:
 private:
 	bool m_failure;
 	std::atomic_bool m_cancellation_token;
-#ifdef _WIN32
-	WSADATA m_wsa;
 	SOCKET m_socket;
 	struct addrinfo* m_result, m_hints;
+#ifdef _WIN32
+	WSADATA m_wsa;
+	WSAPOLLFD m_fds;
 #else
-
+	pollfd m_fds[200];
 #endif // _WIN32
+
+private:
+	SOCKET accept_connection();
+	void handle_connection(const SOCKET& client);
+	bool respond_client(const SOCKET& client, const std::string& response);
 };
 

@@ -3,9 +3,22 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <sstream>
 
 namespace HTTP
 {
+
+	const std::string EXAMPLE_HTML = 
+		"<html>"
+			"<head>"
+				"<title>Hello, from Melon Web Server!</title>"
+			"</head>"
+			"<body>"
+				"<h1>Hello, World!</h1>"
+				"<p>Lorem Ipsum</p>"
+			"</body"
+		"</html>";
+
 	class method
 	{
 	public:
@@ -74,10 +87,27 @@ namespace HTTP
 		std::vector<HTTP::HEAD_ERROR> m_error_list;
 
 	private:
-		void parse_body();
+		void request_body();
 		std::string correct_method(const std::string& method);
 		void optionals_parse();
 	}; // request.cpp
 
-	request init_request(const std::string& request); // HTTPParser.cpp
+	class response
+	{
+	public:
+		response(const request& req);
+		~response(void);
+
+		std::string connect();
+	private:
+		std::string m_status_line{};
+		std::vector<std::string> m_header{};
+		std::vector<std::string> m_body{};
+		std::vector<std::string> m_all{};
+
+	private:
+		void construct_status_line(const request& req);
+		void construct_headers(const request& req);
+		void construct_body(const request& req);
+	};
 }

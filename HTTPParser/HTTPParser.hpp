@@ -1,7 +1,6 @@
-#pragma once
+// HTTPParser.cpp : Defines the functions for the static library.
+//
 
-#include <string>	
-#include <stdio.h>
-
-#include "request.hpp"
+#include "pch.h"
+#include "framework.h"
 #include "HTTP.hpp"
