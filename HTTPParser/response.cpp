@@ -23,9 +23,9 @@ HTTP::response::~response(void)
 
 }
 
-void HTTP::response::construct_status_line(request& req, webpage& wp) // Simple for now, can't be asked anymore right now.
+void HTTP::response::construct_status_line(request& req, webpage& wp)
 {
-	m_status_line = str_frmt("%s %i %s", "HTTP/1.1", wp.status_code, wp.status_code >= 400 ? "Not Found" : "OK"); // Fix status message.
+	m_status_line = str_frmt("%s %i %s", "HTTP/1.1", wp.status_code, wp.status_message.c_str());
 }
 
 void HTTP::response::construct_headers(request& req, webpage& wp)
@@ -58,16 +58,15 @@ HTTP::webpage HTTP::response::load_page(std::string& page, std::unordered_map<st
 	if (it == files.end())
 	{
 		wp.page = ERROR_PAGE;
-		wp.status_code = 404;
+		wp.status_code = HTTP::STATUS_CODE::NOT_FOUND;
+		wp.set_sm();
+		return wp;
 	}
-	else
-	{
-		wp.page = it->second;
-		wp.status_code = 200;
-	}
+	wp.page = it->second;
+	wp.status_code = HTTP::STATUS_CODE::OK;
+	wp.set_sm();
 	return wp;
 }
-
 
 template<typename ... Args>
 std::string

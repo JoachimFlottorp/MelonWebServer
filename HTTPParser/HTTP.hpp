@@ -29,28 +29,107 @@ namespace HTTP
 		{
 			for (auto const& method : m_all_methods)
 			{
-				if (method.first == m)
-					return method.second;
+				if (method == m)
+					return method;
 			}
 			return std::string(" ");
 		}
 
 	private:
 
-		// Unsure what exactly to put here, or if if honestly i just use an array here.
-		std::map<std::string, std::string> m_all_methods 
+		std::vector<std::string> m_all_methods
 		{
-			{"GET", "GET"},
-			{"HEAD", "HEAD"},
-			{"POST", "POST"},
-			{"PUT", "PUT"},
-			{"DELETE", "DELETE"},
-			{"CONNECT", "CONNECT"},
-			{"OPTIONS", "OPTIONS"},
-			{"TRACE", "TRACE"},
-			{"PATCH", "PATCH"},
+			"GET",
+			"HEAD", 
+			"POST", 
+			"PUT", 
+			"DELETE", 
+			"CONNECT",
+			"OPTIONS",
+			"TRACE",
+			"PATCH",
 		};
 	};
+
+	enum class STATUS_CODE // As if im implementing all of these lol.
+	{
+		// Information
+		CONTINUE = 100,
+		SWITCHING_PROTOCOLS = 101,
+		PROCESSING = 102,
+		EARLY_HINTS = 103,
+
+		// Successfull
+		OK = 200,
+		CREATED = 201,
+		ACCEPTED = 202,
+		NON_AUTHOROTIVE_INFORMATION = 203,
+		NO_CONTENT = 204,
+		RESET_CONTENT = 205,
+		PARTIAL_CONTENT = 206,
+		MULTI_STATUS= 207,
+		ALREADY_REPORTED= 208,
+		IM_USED= 209,
+
+		// Redirection
+		MULTIPLE_CHOICES= 300,
+		MOVED_PERMAMENTLY= 301,
+		FOUND = 302,
+		SEE_OTHER= 303,
+		NOT_MODIFIED = 304,
+		TEMPORARY_REDIRECTION = 307,
+		PERMAMENT_REDIRECTION = 308,
+
+		// Client error
+		BAD_REQUEST = 400,
+		UNAUTHORIZED = 401,
+		PAYMENT_REQUIRED = 402,
+		FORBIDDEN = 403,
+		NOT_FOUND = 404,
+		METHOD_NOT_ALLOWED = 405,
+		NOT_ACCEPTABLE = 406,
+		PROXY_AUTHENTICATION_REQUIRED = 407,
+		REQUEST_TIMEOUT = 408,
+		CONFLICT = 409,
+		GONE = 410,
+		LENGTH_REQUIRED = 411,
+		PRECONDITION_FAILED = 412,
+		PAYLOAD_TOO_LARGE = 413,
+		URI_TOO_LONG = 414,
+		UNSUPPORTED_MEDIA_TYPe = 415,
+		RANGE_NOT_SATISFIABLE = 416,
+		EXPECTATION_FAILED = 417,
+		IM_A_TEAPOT = 418,
+		UNPROCESSABLE_ENTITY = 422,
+		LOCKED = 423,
+		FAILED_DEPENDENCY = 424,
+		TOO_EARLY = 425,
+		UPGRADE_REQUIRED = 426,
+		PRECONDITION_REQUIRED = 427,
+		TOO_MANY_REQUESTS = 429,
+		REQUEST_HEADER_FIELDS_TOO_LARGE = 431,
+		UNAVAILABLE_FOR_LEGAL_REASONS = 451,
+
+		// Server eror
+		INTERNAL_SERVER_ERROR = 500,
+		NOT_IMPLEMENTED = 501,
+		BAD_GATEWAY = 502,
+		SERVICE_UNAVAILABLE = 503,
+		GATEWAY_TIMEOUT = 504,
+		HTTP_VERSION_NOT_SUPPORTED = 505,
+		VARIANT_ALSO_NEGOTIATES = 506,
+		INSUFFICENT_STORAGE = 507,
+		LOOP_DETECTED = 508,
+		NOT_EXTENDED = 510,
+		NETWORK_AUTHENTICATION_REQUIRED = 501
+	};
+
+	static std::map<STATUS_CODE, std::string> res_status_message
+	{
+		{ STATUS_CODE::OK, "OK"},
+		{ STATUS_CODE::NOT_FOUND, "Not Found"}
+	};
+
 
 	// Use this to define a error the client has.
 	enum class HEAD_ERROR
@@ -72,8 +151,21 @@ namespace HTTP
 
 	struct webpage
 	{
-		int status_code;
+		STATUS_CODE status_code;
+		std::string status_message;
 		std::string page;
+
+		void set_sm()
+		{
+			for (const auto& code : HTTP::res_status_message)
+			{
+				if (code.first == status_code)
+				{
+					status_message = code.second;
+					break;
+				}
+			}
+		}
 	};
 
 	class request
@@ -119,5 +211,5 @@ namespace HTTP
 		void construct_headers(request& req, webpage& wp);
 		void construct_body(request& req, webpage& wp);
 		webpage load_page(std::string& page, std::unordered_map<std::string, std::string>& files);
-	};
+	}; // response.cpp
 }

@@ -108,6 +108,7 @@ bool mSocket::IsError()
 
 void mSocket::Listen()
 {
+	auto pt = std::stoi(Melon::config->GetValue("POLL_TIMEOUT"));
 	while (m_cancellation_token)
 	{
 		// Accept a client socket
@@ -116,7 +117,7 @@ void mSocket::Listen()
 		m_fds.events = POLLRDNORM;
 		m_fds.revents = 0;
 
-		if (WSAPoll(&m_fds, 1, std::stoi(Melon::config->GetValue("POLL_TIMEOUT"))) > 0)
+		if (WSAPoll(&m_fds, 1, pt) > 0)
 		{
 			if (m_fds.revents & POLLRDNORM)
 			{
@@ -190,18 +191,8 @@ void mSocket::handle_connection(const SOCKET& client)
 
 			HTTP::request request = HTTP::request(rcv);
 
-			// Check if the client sends an illegal request.
-			if (!request.valid())
-			{
-				HTTP::response response = HTTP::response(request, m_files);
-				sndbuf.replace(0, sndbuf.size(), "Not Correct."); // Change this.
-			}
-			// If it is correct.
-			else
-			{
-				HTTP::response response = HTTP::response(request, m_files);
-				sndbuf.replace(0, sndbuf.size(), response.connect());
-			}
+			HTTP::response response = HTTP::response(request, m_files);
+			sndbuf.replace(0, sndbuf.size(), response.connect());
 
 			if (!respond_client(client, sndbuf))
 			{
