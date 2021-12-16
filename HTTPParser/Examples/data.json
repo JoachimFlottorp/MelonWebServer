@@ -1,0 +1,10 @@
+[
+  {
+    "message": "Hello, World!",
+    "code": 1
+  },
+  {
+    "message": "foobar", 
+    "code": 2
+  }
+]

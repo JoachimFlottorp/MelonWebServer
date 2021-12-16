@@ -3,20 +3,20 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <unordered_map>
 #include <sstream>
+#include <fstream>
 
 namespace HTTP
 {
-
-	const std::string EXAMPLE_HTML = 
+	const std::string ERROR_PAGE =
 		"<html>"
-			"<head>"
-				"<title>Hello, from Melon Web Server!</title>"
-			"</head>"
-			"<body>"
-				"<h1>Hello, World!</h1>"
-				"<p>Lorem Ipsum</p>"
-			"</body"
+		"<head>"
+		"<title>404 Page not found</title>"
+		"</head>"
+		"<body>"
+		"<h1>404 Page not found.</h1>"
+		"</body>"
 		"</html>";
 
 	class method
@@ -70,12 +70,21 @@ namespace HTTP
 		std::map<std::string, std::string> optionals;
 	};
 
+	struct webpage
+	{
+		int status_code;
+		std::string page;
+	};
+
 	class request
 	{
 	public:
 		request(const std::string& req);
 		~request(void);
 
+		std::string method();
+		std::string path();
+		std::string version();
 		bool check_error(HTTP::HEAD_ERROR error_type);
 		bool valid();
 	private:
@@ -95,19 +104,20 @@ namespace HTTP
 	class response
 	{
 	public:
-		response(const request& req);
+		response(request& req, std::unordered_map<std::string, std::string>& files);
 		~response(void);
 
 		std::string connect();
 	private:
 		std::string m_status_line{};
 		std::vector<std::string> m_header{};
-		std::vector<std::string> m_body{};
+		std::string m_body{};
 		std::vector<std::string> m_all{};
 
 	private:
-		void construct_status_line(const request& req);
-		void construct_headers(const request& req);
-		void construct_body(const request& req);
+		void construct_status_line(request& req, webpage& wp);
+		void construct_headers(request& req, webpage& wp);
+		void construct_body(request& req, webpage& wp);
+		webpage load_page(std::string& page, std::unordered_map<std::string, std::string>& files);
 	};
 }

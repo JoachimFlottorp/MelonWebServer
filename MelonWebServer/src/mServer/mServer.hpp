@@ -6,6 +6,7 @@
 #include <memory>
 #include <thread>
 #include <chrono>
+#include <dirent.h>
 
 class mServer
 {
@@ -21,6 +22,8 @@ private:
 	std::shared_ptr<mLogger> m_logger;
 	std::unique_ptr<mSocket> m_socket;
 	std::atomic_bool m_close_socket;
-	//std::thread m_socket_thread;
+
+private:
+	std::unordered_map<std::string, std::string> cache_pages();
 };
 

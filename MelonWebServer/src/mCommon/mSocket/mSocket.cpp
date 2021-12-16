@@ -1,12 +1,13 @@
 #include "mSocket.hpp"
 
-mSocket::mSocket(std::atomic_bool& cancellation_token)
+mSocket::mSocket(std::atomic_bool& cancellation_token, std::unordered_map<std::string, std::string>& files)
 {
 	m_failure = false;
 	m_result = nullptr;
 	m_socket = INVALID_SOCKET;
 	m_result = NULL;
 	m_cancellation_token = &cancellation_token;
+	m_files = files;
 #ifdef _WIN32
 	m_fds = {};
 #endif // _WIN32
@@ -192,13 +193,13 @@ void mSocket::handle_connection(const SOCKET& client)
 			// Check if the client sends an illegal request.
 			if (!request.valid())
 			{
-				HTTP::response response = HTTP::response(request);
+				HTTP::response response = HTTP::response(request, m_files);
 				sndbuf.replace(0, sndbuf.size(), "Not Correct."); // Change this.
 			}
 			// If it is correct.
 			else
 			{
-				HTTP::response response = HTTP::response(request);
+				HTTP::response response = HTTP::response(request, m_files);
 				sndbuf.replace(0, sndbuf.size(), response.connect());
 			}
 

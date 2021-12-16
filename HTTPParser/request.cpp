@@ -69,6 +69,21 @@ HTTP::request::~request(void)
 
 }
 
+std::string HTTP::request::method()
+{
+	return m_header.method;
+}
+
+std::string HTTP::request::path()
+{
+	return m_header.path;
+}
+
+std::string HTTP::request::version()
+{
+	return m_header.version;
+}
+
 void HTTP::request::request_body()
 {
 	for (const auto& i : m_req_vec)

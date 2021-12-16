@@ -34,7 +34,7 @@
 class mSocket
 {
 public:
-	mSocket(std::atomic_bool& cancellation_token);
+	mSocket(std::atomic_bool& cancellation_token, std::unordered_map<std::string, std::string>& files);
 	~mSocket(void);
 
 	bool IsError();
@@ -45,6 +45,7 @@ private:
 	std::atomic_bool m_cancellation_token;
 	SOCKET m_socket;
 	struct addrinfo* m_result, m_hints;
+	std::unordered_map<std::string, std::string> m_files;
 #ifdef _WIN32
 	WSADATA m_wsa;
 	WSAPOLLFD m_fds;
