@@ -72,19 +72,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)HTTPParser;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)HTTPParser;$(SolutionDir)pMelon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)HTTPParser;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)HTTPParser;$(SolutionDir)pMelon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)HTTPParser;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)HTTPParser;$(SolutionDir)pMelon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)HTTPParser;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)HTTPParser;$(SolutionDir)pMelon;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -178,6 +178,7 @@
     <ClInclude Include="src\mCommon\mConfig\mConfig.hpp" />
     <ClInclude Include="src\mCommon\Melon.hpp" />
     <ClInclude Include="src\mCommon\mLogger\mLogger.hpp" />
+    <ClInclude Include="src\mCommon\protocol.h" />
     <ClInclude Include="src\mServer\mServer.hpp" />
     <ClInclude Include="src\main.hpp" />
   </ItemGroup>

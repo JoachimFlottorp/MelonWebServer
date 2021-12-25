@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MelonWebServer", "MelonWebS
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HTTPParser", "HTTPParser\HTTPParser.vcxproj", "{85454E3D-3C7B-43E5-AE5B-A47418BEA5CB}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pMelon", "pMelon\pMelon.vcxproj", "{720DEABA-B9B1-43E3-96CB-E5CCA9253430}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{85454E3D-3C7B-43E5-AE5B-A47418BEA5CB}.Release|x64.Build.0 = Release|x64
 		{85454E3D-3C7B-43E5-AE5B-A47418BEA5CB}.Release|x86.ActiveCfg = Release|Win32
 		{85454E3D-3C7B-43E5-AE5B-A47418BEA5CB}.Release|x86.Build.0 = Release|Win32
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Debug|x64.ActiveCfg = Debug|x64
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Debug|x64.Build.0 = Debug|x64
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Debug|x86.ActiveCfg = Debug|Win32
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Debug|x86.Build.0 = Debug|Win32
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Release|x64.ActiveCfg = Release|x64
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Release|x64.Build.0 = Release|x64
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Release|x86.ActiveCfg = Release|Win32
+		{720DEABA-B9B1-43E3-96CB-E5CCA9253430}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

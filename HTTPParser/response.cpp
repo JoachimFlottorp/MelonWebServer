@@ -4,6 +4,8 @@ template<typename ... Args>
 std::string
 str_frmt(const std::string& format, Args ... args);
 
+std::string no_ext(std::string& page);
+
 HTTP::response::response(request& req, std::unordered_map<std::string, std::string>& files)
 {
 	std::string path = req.path();
@@ -55,7 +57,8 @@ HTTP::webpage HTTP::response::load_page(std::string& page, std::unordered_map<st
 {
 	webpage wp;
 	auto it = files.find(page);
-	if (it == files.end())
+	auto two = files.find(no_ext(page));
+	if (it == files.end() || two == files.end())
 	{
 		wp.page = ERROR_PAGE;
 		wp.status_code = HTTP::STATUS_CODE::NOT_FOUND;
@@ -78,4 +81,10 @@ str_frmt(const std::string& format, Args ... args)
 	auto buf = std::make_unique<char[]>(size);
 	std::snprintf(buf.get(), size, format.c_str(), args ...);
 	return std::string(buf.get(), buf.get() + size - 1);
+}
+
+std::string no_ext(std::string& page)
+{
+	auto first_period = page.find_first_of('.');
+	return page.substr(0, first_period || page.length());
 }

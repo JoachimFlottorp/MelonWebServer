@@ -1,6 +1,6 @@
 #include "mServer.hpp"
 
-std::string name_no_extension(char* a, size_t size);
+std::string name(char* a, size_t size);
 
 mServer::mServer(const int32_t& port, std::shared_ptr<mLogger> const& logger)
 {
@@ -64,7 +64,7 @@ std::unordered_map<std::string, std::string> mServer::cache_pages()
 	}
 	while ((entry = readdir(dir)) != NULL)
 	{
-		std::string fname = name_no_extension(entry->d_name, entry->d_namlen);
+		std::string fname = name(entry->d_name, entry->d_namlen);
 		std::string full_path = file_location + "/" + entry->d_name;
 		std::ifstream ifs(full_path);
 
@@ -78,7 +78,7 @@ std::unordered_map<std::string, std::string> mServer::cache_pages()
 			{
 				auto contents = std::string(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
 
-				if (fname == "index")
+				if (fname == "index" || fname == "index.html")
 					cached_files.insert(std::make_pair("/", contents));
 				else
 					cached_files.insert(std::make_pair('/'+fname, contents));
@@ -89,13 +89,12 @@ std::unordered_map<std::string, std::string> mServer::cache_pages()
 	return cached_files;
 }
 
-std::string name_no_extension(char* a, size_t size)
+std::string name(char* a, size_t size)
 {
 	std::string s{};
 	for (auto i = 0; i < size; i++)
 	{
 		s += a[i];
 	}
-	auto first_period = s.find_first_of('.'); // For now the file will not work if it has multiple periods, like foo.tar.gz.
-	return s.substr(0, first_period);
+	return s;
 }

@@ -12,7 +12,13 @@ mSocket::mSocket(std::atomic_bool& cancellation_token, std::unordered_map<std::s
 	m_fds = {};
 #endif // _WIN32
 
-	
+	auto p = Melon::config->GetValue("PROTOCOL");
+
+	if (p == "HTTP")
+		m_protocol = PROTOCOL::HTTP;
+	if (p == "Melon")
+		m_protocol = PROTOCOL::Melon;
+
 	Melon::logger->Log("SOCKET", "Creating a winsocket...");
 #ifdef _WIN32
 	if (WSAStartup(MAKEWORD(2, 2), &m_wsa) != 0) 
@@ -189,10 +195,24 @@ void mSocket::handle_connection(const SOCKET& client)
 			Melon::logger->Log("SOCKET", "Bytes received: %d", bytesReceived);
 			printf("%s", rcv.c_str());
 
-			HTTP::request request = HTTP::request(rcv);
+			switch (m_protocol)
+			{
+			case PROTOCOL::HTTP:
+			{
+				HTTP::request request = HTTP::request(rcv);
+				HTTP::response response = HTTP::response(request, m_files);
+				sndbuf.replace(0, sndbuf.size(), response.connect());
+				break;
+			}
+			
+			case PROTOCOL::Melon:
+			{
+				// Not implementing my own protocol just yet.
+			}
 
-			HTTP::response response = HTTP::response(request, m_files);
-			sndbuf.replace(0, sndbuf.size(), response.connect());
+				default: return;
+			}
+
 
 			if (!respond_client(client, sndbuf))
 			{

@@ -25,11 +25,12 @@
 #include <vector>
 
 #include <HTTPParser.hpp>
+#include <pMelon.hpp>
 
 #include "../Melon.hpp"
 #include "../mLogger/mLogger.hpp"
 #include "../mConfig/mConfig.hpp"
-
+#include "../protocol.h"
 
 class mSocket
 {
@@ -46,6 +47,7 @@ private:
 	SOCKET m_socket;
 	struct addrinfo* m_result, m_hints;
 	std::unordered_map<std::string, std::string> m_files;
+	PROTOCOL m_protocol;
 #ifdef _WIN32
 	WSADATA m_wsa;
 	WSAPOLLFD m_fds;

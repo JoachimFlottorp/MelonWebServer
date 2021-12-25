@@ -47,6 +47,9 @@
     <ClInclude Include="src\mCommon\mSocket\mSocket.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\mCommon\protocol.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Xml Include="src\resources\config.toml" />
